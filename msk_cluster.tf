@@ -22,6 +22,12 @@ resource "aws_msk_cluster" "msk_cluster" {
     encryption_at_rest_kms_key_arn = aws_kms_key.msk_kms_key.arn
   }
 
+  client_authentication {
+    sasl {
+      iam = true
+    }
+  }
+
   open_monitoring {
     prometheus {
       jmx_exporter {
