@@ -1,7 +1,3 @@
-resource "aws_kms_key" "kms" {
-  description = "KMS Key for something"
-}
-
 resource "aws_cloudwatch_log_group" "msk_cloudwatch_log_group" {
   name = "msk_broker_logs"
 }
@@ -13,17 +9,17 @@ resource "aws_msk_cluster" "msk_cluster" {
 
   broker_node_group_info {
     client_subnets = [
-      aws_subnet.subnet_az1.id,
-      aws_subnet.subnet_az2.id,
-      aws_subnet.subnet_az3.id
+      module.vpc.private_subnets[0],
+      module.vpc.private_subnets[1],
+      module.vpc.private_subnets[2]
     ]
-    ebs_volume_size = 1000
+    ebs_volume_size = 2
     instance_type   = "kafka.m5.large"
     security_groups = [aws_security_group.sg.id]
   }
 
   encryption_info {
-    encryption_at_rest_kms_key_arn = aws_kms_key.kms.arn
+    encryption_at_rest_kms_key_arn = aws_kms_key.msk_kms_key.arn
   }
 
   open_monitoring {
